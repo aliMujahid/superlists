@@ -12,8 +12,28 @@ class IndexTest(TestCase):
 
     def test_can_save_POST_requests(self):
         response = self.client.post('/', data={'item_text':'new item text'})
-        self.assertIn('new item text', response.content.decode())
-        self.assertTemplateUsed(response, 'lists/index.html')
+        
+        self.assertEqual(Item.objects.count(), 1)
+        item = Item.objects.first()
+        self.assertEqual(item.text, 'new item text')
+
+    def test_redirect_after_post(self):
+        response = self.client.post('/', data={'item_text':'new item text'})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], '/')
+
+    def test_only_save_item_when_necessary(self):
+        self.client.get('/')
+        self.assertEqual(Item.objects.count(), 0)
+
+    def test_displays_all_list_items(self):
+        Item.objects.create(text='itemey 1')
+        Item.objects.create(text='itemey 2')
+
+        response = self.client.get('/')
+
+        self.assertIn('itemey 1', response.content.decode())
+        self.assertIn('itemey 2', response.content.decode())
 
 
 class ItemModelTest(TestCase):
@@ -31,6 +51,6 @@ class ItemModelTest(TestCase):
 
         first_saved_item = saved_items[0]
         second_saved_item = saved_items[1]
-        
+
         self.assertEqual(first_saved_item.text, 'The first (ever) list item')
         self.assertEqual(second_saved_item.text, 'Item the second')
