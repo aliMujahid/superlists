@@ -26,6 +26,7 @@ SECRET_KEY = 'django-insecure-bev8hvepnq_j^d-88@fjyn(zh(fbz#t4p$(*+w3yot9b2euuxi
 DEBUG = True
 
 ALLOWED_HOSTS = []
+CSRF_TRUSTED_ORIGINS = ['http://ottg-django.ddns.net', 'http://superlists.ddns.net' '127.0.0.1']
 
 
 # Application definition
