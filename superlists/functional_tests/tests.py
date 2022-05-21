@@ -4,11 +4,11 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException
 import unittest
 
-from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 MAX_WAIT = 4
 
-class NewVisitorTest(LiveServerTestCase):
+class NewVisitorTest(StaticLiveServerTestCase):
     def setUp(self):
         self.browser = webdriver.Firefox()
 
@@ -19,7 +19,7 @@ class NewVisitorTest(LiveServerTestCase):
         start_time = time.time()
         while True:
             try:
-                table = self.browser.find_element(by='id', value='id_table_list')
+                table = self.browser.find_element(by='id', value='id_list_table')
                 rows = table.find_elements(by='tag name', value='tr')
                 self.assertIn(text, [row.text for row in rows])        
                 return
