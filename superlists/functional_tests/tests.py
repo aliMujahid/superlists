@@ -40,7 +40,7 @@ class NewVisitorTest(LiveServerTestCase):
         # She is invited to enter a to-do item straight away
         inputbox = self.browser.find_element(by='id', value='id_new_item')
         self.assertEqual(inputbox.get_attribute('placeholder'), 
-                        'Enter a list item')
+                        'Enter a to-do item')
 
         # She enters "Buy peacock feathers" into a box (Edith's 
         # hobby tying fly-fishing lures.)
@@ -105,6 +105,28 @@ class NewVisitorTest(LiveServerTestCase):
         self.assertIn('Buy milk', page_text)
 
         # Satisfied, they both go back to sleep
+
+    def test_layout_and_styling(self):
+        # Edith goes to the home page
+        self.browser.get(self.live_server_url)
+        self.browser.set_window_size(1024, 768)
+
+        # She notices the inputbox nicely centered 
+        inputbox = self.browser.find_element(by='id', value='id_new_item')
+        self.assertAlmostEqual(
+            inputbox.location['x'] + inputbox.size['width']/2, 512, delta=10
+        )
+
+        # She starts a new list and sees the input box is
+        # centerd there too
+        inputbox.send_keys('testing')
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for_row_in_list_table('1: testing')
+
+        inputbox = self.browser.find_element(by='id', value='id_new_item')
+        self.assertAlmostEqual(
+            inputbox.location['x'] + inputbox.size['width']/2, 512, delta=10
+        )
 
 
 if __name__ == '__main__':
