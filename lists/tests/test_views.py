@@ -2,12 +2,16 @@ from django.utils.html import escape
 from django.test import TestCase
 
 from lists.models import Item, List
+from lists.forms import ItemForm
 
 class IndexTest(TestCase):
     def test_index_returns_correct_html(self):
         response = self.client.get('/')
         self.assertTemplateUsed(response, 'lists/index.html')
 
+    def test_index_uses_item_form(self):
+        response = self.client.get('/')
+        self.assertIsInstance(response.context['form'], ItemForm)
 
 class ViewListTest(TestCase):
     def test_uses_list_template(self):
