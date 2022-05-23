@@ -7,7 +7,7 @@ class ItemValidationTest(FunctionalTest):
         # Edith goes to the home page and accidentally tries to submit
         # an empty list item. She hits enter on the empty input box
         self.browser.get(self.live_server_url)
-        self.browser.find_element(by='id', value='id_new_item').send_keys(Keys.ENTER)
+        self.get_input_box().send_keys(Keys.ENTER)
 
         # The page refreshes and shows an error massage saying 
         # that list items cannot be empty
@@ -17,13 +17,13 @@ class ItemValidationTest(FunctionalTest):
         ))
 
         # She tries again with some text which now works
-        self.browser.find_element(by='id', value='id_new_item').send_keys('Buy milk')
-        self.browser.find_element(by='id', value='id_new_item').send_keys(Keys.ENTER)
+        self.get_input_box().send_keys('Buy milk')
+        self.get_input_box().send_keys(Keys.ENTER)
         self.wait_for_row_in_list_table('1: Buy milk')
 
 
         # Perversly, she now decides to enter another empty item
-        self.browser.find_element(by='id', value='id_new_item').send_keys(Keys.ENTER)
+        self.get_input_box().send_keys(Keys.ENTER)
 
         # she recives a similar error massage
         self.wait_for(lambda: self.assertEqual(
@@ -32,7 +32,7 @@ class ItemValidationTest(FunctionalTest):
         ))
 
         # And she can correct it by filling some text item.
-        self.browser.find_element(by='id', value='id_new_item').send_keys('Make tea')
-        self.browser.find_element(by='id', value='id_new_item').send_keys(Keys.ENTER)
+        self.get_input_box().send_keys('Make tea')
+        self.get_input_box().send_keys(Keys.ENTER)
         self.wait_for_row_in_list_table('1: Buy milk')
         self.wait_for_row_in_list_table('2: Make tea')
