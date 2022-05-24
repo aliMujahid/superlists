@@ -1,3 +1,4 @@
+from unittest import skip
 from django.utils.html import escape
 from django.test import TestCase
 
@@ -94,6 +95,15 @@ class ViewListTest(TestCase):
     def test_list_validation_errors_shown_on_page(self):
         response = self.post_invalid_item()
         self.assertContains(response, escape(EMPTY_ITEM_ERROR))
+    
+    @skip
+    def test_duplicate_item_validation_error_end_up_on_list_page(self):
+        list_ = List.objects.create()
+        Item.objects.create(text='item text', list=list_)
+        response = self.client.post(f'/lists/{list_.id}/', data={'text':'item text'})
+        self.assertTemplateUsed(response, 'lists/list.html')
+        self.assertContains(response, escape("You've already got thin in your list"))
+        self.assertEqual(Item.objects.count(), 1)
 
 
 
