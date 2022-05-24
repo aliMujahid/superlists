@@ -3,7 +3,7 @@ from django.utils.html import escape
 from django.test import TestCase
 
 from lists.models import Item, List
-from lists.forms import ItemForm, EMPTY_ITEM_ERROR
+from lists.forms import ItemForm, EMPTY_ITEM_ERROR, ExistingListItemForm, DUPLICATE_ITEM_ERROR
 
 class IndexTest(TestCase):
     def test_index_returns_correct_html(self):
@@ -53,7 +53,7 @@ class ViewListTest(TestCase):
     def test_displays_item_form(self):
         list_ = List.objects.create()
         response = self.client.get(list_.get_absolute_url())
-        self.assertIsInstance(response.context['form'], ItemForm)
+        self.assertIsInstance(response.context['form'], ExistingListItemForm)
 
     def test_can_save_POST_request_to_and_existing_list(self):
         other_list = List.objects.create()
@@ -90,19 +90,18 @@ class ViewListTest(TestCase):
     def test_invalid_input_passes_form_to_template(self):
         response = self.post_invalid_item()
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.context['form'], ItemForm)
+        self.assertIsInstance(response.context['form'], ExistingListItemForm)
 
     def test_list_validation_errors_shown_on_page(self):
         response = self.post_invalid_item()
         self.assertContains(response, escape(EMPTY_ITEM_ERROR))
     
-    @skip
     def test_duplicate_item_validation_error_end_up_on_list_page(self):
         list_ = List.objects.create()
         Item.objects.create(text='item text', list=list_)
         response = self.client.post(f'/lists/{list_.id}/', data={'text':'item text'})
         self.assertTemplateUsed(response, 'lists/list.html')
-        self.assertContains(response, escape("You've already got thin in your list"))
+        self.assertContains(response, escape(DUPLICATE_ITEM_ERROR))
         self.assertEqual(Item.objects.count(), 1)
 
 
