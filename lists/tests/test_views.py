@@ -86,7 +86,7 @@ class ViewListTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'lists/list.html')
 
-    def test_invalid_input_passes_form_to_list(self):
+    def test_invalid_input_passes_form_to_template(self):
         response = self.post_invalid_item()
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.context['form'], ItemForm)
@@ -110,12 +110,10 @@ class NewListTest(TestCase):
         new_list = List.objects.first()
         self.assertRedirects(response, f'/lists/{new_list.id}/')
 
-    def test_validation_errors_are_sent_back_to_home_page(self):
+    def test_validation_errors_render_index_template(self):
         response = self.client.post('/lists/new', data={'text':''})
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'lists/index.html')
-        expected_error = escape(EMPTY_ITEM_ERROR)
-        self.assertContains(response, expected_error)
 
     def test_invaild_input_passes_form_to_template(self):
         response = self.client.post('/lists/new', data={'text':''})
